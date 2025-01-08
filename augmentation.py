@@ -29,7 +29,6 @@ transform = A.Compose([
     A.FancyPCA(alpha=0.1, p=0.2),
     A.GaussNoise(var_limit=(10.0, 50.0), p=0.3),
     A.ISONoise(color_shift=(0.01, 0.05), intensity=(0.1, 0.5), p=0.3),
-    A.ImageCompression(quality_lower=20, quality_upper=100, p=0.3),
     A.MultiplicativeNoise(multiplier=(0.9, 1.1), p=0.3),
     A.RandomFog(fog_coef_lower=0.1, fog_coef_upper=0.3, alpha_coef=0.1, p=0.2),
     A.RandomRain(slant_lower=-10, slant_upper=10, drop_length=20, drop_width=1, drop_color=(200, 200, 200), blur_value=1, brightness_coefficient=0.7, p=0.2),
@@ -42,7 +41,7 @@ def augment_and_save(image_path, output_dir):
     augmented = transform(image=image)['image']
     output_file = os.path.join(output_dir, os.path.basename(image_path))
     cv2.imwrite(output_file, augmented.permute(1, 2, 0).numpy())
-    
+
 def main(dataset_path,output_path):
     # Iterate through the dataset and apply augmentations
     for root, _, files in os.walk(dataset_path):
