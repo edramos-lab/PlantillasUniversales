@@ -2,6 +2,7 @@ import os
 import cv2
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+import numpy as np
 from tqdm import tqdm
 import argparse
 
@@ -25,11 +26,6 @@ transform = A.Compose([
     A.Perspective(scale=(0.05, 0.1), p=0.3),
     A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
     A.ToGray(p=0.1),
-    A.Equalize(p=0.2),
-    A.FancyPCA(alpha=0.1, p=0.2),
-    A.GaussNoise(var_limit=(10.0, 50.0), p=0.3),
-    A.ISONoise(color_shift=(0.01, 0.05), intensity=(0.1, 0.5), p=0.3),
-    A.MultiplicativeNoise(multiplier=(0.9, 1.1), p=0.3),
     A.RandomFog(fog_coef_lower=0.1, fog_coef_upper=0.3, alpha_coef=0.1, p=0.2),
     A.RandomRain(slant_lower=-10, slant_upper=10, drop_length=20, drop_width=1, drop_color=(200, 200, 200), blur_value=1, brightness_coefficient=0.7, p=0.2),
     ToTensorV2()
@@ -38,6 +34,7 @@ transform = A.Compose([
 def augment_and_save(image_path, output_dir):
     image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = image.astype(np.uint8)  # Ensure the image is of type uint8
     augmented = transform(image=image)['image']
     output_file = os.path.join(output_dir, os.path.basename(image_path))
     cv2.imwrite(output_file, augmented.permute(1, 2, 0).numpy())
